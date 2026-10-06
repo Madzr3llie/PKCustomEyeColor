@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-[assembly: MelonInfo(typeof(EyeColorSlider.Core), "EyeColorSlider", "1.0.0", "maddi", null)]
+[assembly: MelonInfo(typeof(EyeColorSlider.Core), "EyeColorSlider", "1.0.1", "maddi", null)]
 [assembly: MelonGame("Blue Meridian", "Prehistoric Kingdom")]
 
 namespace EyeColorSlider

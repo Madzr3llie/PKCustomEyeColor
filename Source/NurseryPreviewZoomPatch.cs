@@ -28,18 +28,18 @@ namespace EyeColorSlider
             if (__instance.currentAnimalPreview == null)
                 return;
 
-            NurseryMenuV2 nursery =
-                UnityEngine.Object.FindObjectOfType<NurseryMenuV2>();
+            NurseryMenuV2 nursery = EyeColorSliderState.Nursery;
 
-            if (nursery != null && nursery.IsGalleryOpen)
+            if (nursery == null || nursery.IsGalleryOpen)
                 return;
 
-            float scroll = Input.GetKey(KeyCode.LeftShift) ? Input.mouseScrollDelta.y : 0f;
+            float scroll = Input.GetKey(KeyCode.LeftShift)
+                ? Input.mouseScrollDelta.y
+                : 0f;
 
             if (Mathf.Abs(scroll) > 0.001f)
             {
                 currentZoom -= scroll * ZoomSpeed;
-
                 currentZoom = Mathf.Clamp(
                     currentZoom,
                     MinZoom,

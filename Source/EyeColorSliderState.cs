@@ -8,6 +8,8 @@ namespace EyeColorSlider
 {
     public static class EyeColorSliderState
     {
+        public static NurseryMenuV2 Nursery;
+
         public static PKSlider EyeSlider;
         public static PKSlider EyeHueSlider;
         public static PKSlider EyeSaturationSlider;
@@ -26,11 +28,15 @@ namespace EyeColorSlider
     {
         static void Postfix(NurseryMenuV2 __instance)
         {
+            EyeColorSliderState.Nursery = __instance;
+
             var t = Traverse.Create(__instance);
 
-            PKSlider hueSlider = (PKSlider)t.Field("hueSlider").GetValue();
+            PKSlider hueSlider =
+                (PKSlider)t.Field("hueSlider").GetValue();
 
-            Transform colorVariation = hueSlider.transform.parent.parent;
+            Transform colorVariation =
+                hueSlider.transform.parent.parent;
 
             GameObject cloneSection = UnityEngine.Object.Instantiate(
                 colorVariation.gameObject,
@@ -38,9 +44,11 @@ namespace EyeColorSlider
 
             cloneSection.name = "EyeColorVariation";
 
-            cloneSection.transform.SetSiblingIndex(colorVariation.GetSiblingIndex() + 1);
+            cloneSection.transform.SetSiblingIndex(
+                colorVariation.GetSiblingIndex() + 1);
 
-            Toggle customizeSkinToggle = (Toggle)t.Field("customizeSkinToggle").GetValue();
+            Toggle customizeSkinToggle =
+                (Toggle)t.Field("customizeSkinToggle").GetValue();
 
             cloneSection.SetActive(customizeSkinToggle.isOn);
 
@@ -49,42 +57,70 @@ namespace EyeColorSlider
                 cloneSection.SetActive(isOn);
             });
 
-            Component[] fitters = cloneSection.GetComponentsInChildren(typeof(ContentSizeFitter), true);
+            Component[] fitters =
+                cloneSection.GetComponentsInChildren(
+                    typeof(ContentSizeFitter),
+                    true);
+
             for (int i = 0; i < fitters.Length; i++)
             {
                 UnityEngine.Object.Destroy(fitters[i]);
             }
 
-            Component[] layouts = cloneSection.GetComponentsInChildren(typeof(LayoutElement), true);
+            Component[] layouts =
+                cloneSection.GetComponentsInChildren(
+                    typeof(LayoutElement),
+                    true);
+
             for (int i = 0; i < layouts.Length; i++)
             {
                 UnityEngine.Object.Destroy(layouts[i]);
             }
 
-            Component[] groups = cloneSection.GetComponentsInChildren(typeof(HorizontalOrVerticalLayoutGroup), true);
+            Component[] groups =
+                cloneSection.GetComponentsInChildren(
+                    typeof(HorizontalOrVerticalLayoutGroup),
+                    true);
+
             for (int i = 0; i < groups.Length; i++)
             {
                 UnityEngine.Object.Destroy(groups[i]);
             }
 
-            Transform pattern = cloneSection.transform.Find("Pattern");
+            Transform pattern =
+                cloneSection.transform.Find("Pattern");
 
             if (pattern != null)
             {
-                RectTransform patternRect = (RectTransform)pattern.GetComponent(typeof(RectTransform));
+                RectTransform patternRect =
+                    (RectTransform)pattern.GetComponent(
+                        typeof(RectTransform));
+
                 float patternHeight = patternRect.rect.height;
                 int patternIndex = pattern.GetSiblingIndex();
 
-                for (int i = patternIndex + 1; i < cloneSection.transform.childCount; i++)
+                for (int i = patternIndex + 1;
+                     i < cloneSection.transform.childCount;
+                     i++)
                 {
-                    Transform child = cloneSection.transform.GetChild(i);
-                    RectTransform row = (RectTransform)child.GetComponent(typeof(RectTransform));
+                    Transform child =
+                        cloneSection.transform.GetChild(i);
+
+                    RectTransform row =
+                        (RectTransform)child.GetComponent(
+                            typeof(RectTransform));
 
                     if (row != null)
-                        row.anchoredPosition += Vector2.up * patternHeight;
+                    {
+                        row.anchoredPosition +=
+                            Vector2.up * patternHeight;
+                    }
                 }
 
-                RectTransform cloneRect = (RectTransform)cloneSection.GetComponent(typeof(RectTransform));
+                RectTransform cloneRect =
+                    (RectTransform)cloneSection.GetComponent(
+                        typeof(RectTransform));
+
                 cloneRect.sizeDelta = new Vector2(
                     cloneRect.sizeDelta.x,
                     cloneRect.sizeDelta.y - patternHeight);
@@ -92,17 +128,30 @@ namespace EyeColorSlider
                 UnityEngine.Object.Destroy(pattern.gameObject);
             }
 
-            Transform headerTextTransform = cloneSection.transform.Find("Header/Text") ?? cloneSection.transform.Find("Title");
-            TextMeshProUGUI titleText = headerTextTransform != null ? headerTextTransform.GetComponent(typeof(TextMeshProUGUI)) as TextMeshProUGUI : null;
+            Transform headerTextTransform =
+                cloneSection.transform.Find("Header/Text")
+                ?? cloneSection.transform.Find("Title");
+
+            TextMeshProUGUI titleText =
+                headerTextTransform != null
+                    ? headerTextTransform.GetComponent(
+                        typeof(TextMeshProUGUI)) as TextMeshProUGUI
+                    : null;
+
             if (titleText != null)
             {
                 titleText.text = "Eye Color";
             }
 
-            Component[] sliderComponents = cloneSection.GetComponentsInChildren(typeof(PKSlider), true);
+            Component[] sliderComponents =
+                cloneSection.GetComponentsInChildren(
+                    typeof(PKSlider),
+                    true);
+
             foreach (Component comp in sliderComponents)
             {
                 PKSlider slider = (PKSlider)comp;
+
                 if (slider.transform.parent.name == "Hue")
                 {
                     EyeColorSliderState.EyeSlider = slider;
@@ -110,18 +159,29 @@ namespace EyeColorSlider
                 }
 
                 if (slider.transform.parent.name == "Saturation")
+                {
                     EyeColorSliderState.EyeSaturationSlider = slider;
+                }
 
                 if (slider.transform.parent.name == "Value")
+                {
                     EyeColorSliderState.EyeValueSlider = slider;
+                }
             }
 
-            Component[] buttonComponents = cloneSection.GetComponentsInChildren(typeof(Button), true);
+            Component[] buttonComponents =
+                cloneSection.GetComponentsInChildren(
+                    typeof(Button),
+                    true);
+
             foreach (Component comp in buttonComponents)
             {
                 Button button = (Button)comp;
+
                 if (button.name == "Randomize")
+                {
                     EyeColorSliderState.EyeRandomizeButton = button;
+                }
             }
 
             SetupSlider(EyeColorSliderState.EyeHueSlider);
@@ -130,50 +190,84 @@ namespace EyeColorSlider
 
             if (EyeColorSliderState.EyeRandomizeButton != null)
             {
-                EyeColorSliderState.EyeRandomizeButton.onClick = new Button.ButtonClickedEvent();
-                EyeColorSliderState.EyeRandomizeButton.onClick.AddListener(() => { EyeColorSliderApplyPatch.RandomizeEyeColor(__instance); });
+                EyeColorSliderState.EyeRandomizeButton.onClick =
+                    new Button.ButtonClickedEvent();
+
+                EyeColorSliderState.EyeRandomizeButton.onClick
+                    .AddListener(() =>
+                    {
+                        EyeColorSliderApplyPatch.RandomizeEyeColor(
+                            __instance);
+                    });
             }
 
-            EyeColorSliderState.EyeHueSlider.OnValueChanged.AddListener(() =>
-            {
-                EyeColorSliderState.EyeHueSlider.SetText(EyeColorSliderState.EyeHueSlider.Value.ToString("F2"), false);
-                EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
-            });
+            EyeColorSliderState.EyeHueSlider.OnValueChanged
+                .AddListener(() =>
+                {
+                    EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
+                });
 
-            EyeColorSliderState.EyeSaturationSlider.OnValueChanged.AddListener(() =>
-            {
-                EyeColorSliderState.EyeSaturationSlider.SetText(EyeColorSliderState.EyeSaturationSlider.Value.ToString("F2"), false);
-                EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
-            });
+            EyeColorSliderState.EyeSaturationSlider.OnValueChanged
+                .AddListener(() =>
+                {
+                    EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
+                });
 
-            EyeColorSliderState.EyeValueSlider.OnValueChanged.AddListener(() =>
-            {
-                EyeColorSliderState.EyeValueSlider.SetText(EyeColorSliderState.EyeValueSlider.Value.ToString("F2"), false);
-                EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
-            });
+            EyeColorSliderState.EyeValueSlider.OnValueChanged
+                .AddListener(() =>
+                {
+                    EyeColorSliderApplyPatch.ApplyEyeColor(__instance);
+                });
 
-            RectTransform parentRect = (RectTransform)colorVariation.parent.GetComponent(typeof(RectTransform));
+            RectTransform parentRect =
+                (RectTransform)colorVariation.parent.GetComponent(
+                    typeof(RectTransform));
+
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
             Canvas.ForceUpdateCanvases();
         }
 
         private static void SetupSlider(PKSlider slider)
         {
-            if (slider == null) return;
+            if (slider == null)
+                return;
 
-            slider.OnValueChanged.RemoveAllListeners();
+            slider.OnValueChanged =
+                new UnityEngine.Events.UnityEvent();
+
+            slider.OnValueChangedClick =
+                new UnityEngine.Events.UnityEvent();
+
+            slider.OnValueChangedDrag =
+                new UnityEngine.Events.UnityEvent();
+
             slider.minValue = 0f;
             slider.maxValue = 1f;
             slider.minMaxHandles = false;
 
-            Transform handleTransform = slider.transform.Find("Handle Area/Handle") ?? slider.transform.Find("Handle");
+            EyeColorSliderApplyPatch.SetSliderSilently(
+                slider,
+                slider.Value);
+
+            Transform handleTransform =
+                slider.transform.Find("Handle Area/Handle")
+                ?? slider.transform.Find("Handle");
+
             if (handleTransform != null)
             {
-                Component[] tmps = handleTransform.GetComponentsInChildren(typeof(TextMeshProUGUI), true);
+                Component[] tmps =
+                    handleTransform.GetComponentsInChildren(
+                        typeof(TextMeshProUGUI),
+                        true);
+
                 if (tmps.Length > 0 && tmps[0] != null)
                 {
-                    Traverse.Create(slider).Field("handleText").SetValue(tmps[0]);
-                    ((TextMeshProUGUI)tmps[0]).gameObject.SetActive(true);
+                    Traverse.Create(slider)
+                        .Field("handleText")
+                        .SetValue(tmps[0]);
+
+                    ((TextMeshProUGUI)tmps[0])
+                        .gameObject.SetActive(true);
                 }
             }
 
